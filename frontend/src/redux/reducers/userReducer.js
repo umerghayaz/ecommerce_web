@@ -4,7 +4,7 @@ import { signUp, login,logout,refreshToken,checkAuth } from "../actions/userActi
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    user: null,
+    user: [],
     loading: false,
     checkingAuth: true,
     error: "",

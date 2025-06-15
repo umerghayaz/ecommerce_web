@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Link } from "react-router-dom";
 import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
 import { motion } from "framer-motion";
 import { signUp ,login} from "../redux/actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
 // import { useUserStore } from "../stores/useUserStore";
+import { useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
   const dispatch = useDispatch()
+    const navigate = useNavigate();
+  
   const { user, loading, error } = useSelector((state) => state.user);
   const [formData, setFormData] = useState({
     name: "",
@@ -15,19 +19,54 @@ const SignUpPage = () => {
     password: "",
     confirmPassword: "",
   });
-  // const { signup, loading } = useUserStore();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    dispatch(signUp(formData))
-    console.log('formData');
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log(formData);
+  //   dispatch(signUp(formData))
+  //   console.log('formData');
 
-    // signup(formData);
-  };
+  //   // signup(formData);
+  // };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      
+      try {
+       if (formData.password !== formData.confirmPassword) {
+    toast.error("Password and Confirm Password do not match!");
+    return;
+  }
+
+  const resultAction = await dispatch(signUp(formData));
+  console.log('hellll',resultAction)
+
+  // ✅ Check if it was fulfilled or rejected
+      // const resultAction = await dispatch(signUp(formData));
+
+  // ✅ Check if it was fulfilled or rejected
+  if (signUp.fulfilled.match(resultAction)) {
+    toast.success("Signup successful!");
+    navigate("/login");
+  } else {
+    // error already handled in thunk (optional fallback)
+    const message = resultAction.payload?.message || "Signup failed";
+    toast.error(message);
+  }
+      } catch (error) {
+        console.log('inside catch',error)
+          toast.error(error.message);
+      }
+    };
+  
+useEffect(() => {
+  toast.success("Toast test!");
+}, []);
 
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <ToastContainer position="top-right" autoClose={3000} />
+       
       <motion.div
         className="sm:mx-auto sm:w-full sm:max-w-md"
         initial={{ opacity: 0, y: -20 }}

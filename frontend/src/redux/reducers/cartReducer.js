@@ -9,7 +9,7 @@ export const cartSlice = createSlice({
   name: "cart",
   initialState: {
     // cart: [],
-    coupon: null,
+    coupon: [],
     total: 0,
     subtotal: 0,
     isCouponApplied: false,
@@ -19,7 +19,7 @@ export const cartSlice = createSlice({
   reducers: {
     clearCart: (state) => {
       state.cart = [];
-      state.coupon = null;
+      state.coupon = [];
       state.total = 0;
       state.subtotal = 0;
     },

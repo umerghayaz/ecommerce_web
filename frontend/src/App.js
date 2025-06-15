@@ -59,7 +59,7 @@ function App() {
           />
           <Route
             path="/login"
-            element={!user ? <LoginPage /> : <Navigate to="/" />}
+            element={<LoginPage /> }
           />
           <Route
             path="/secret-dashboard"

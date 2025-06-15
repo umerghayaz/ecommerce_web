@@ -1,30 +1,50 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
 // import { useUserStore } from "../stores/useUserStore";
 import { login } from "../redux/actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   // const { login, loading } = useUserStore();
   const { user, loading, error } = useSelector((state) => state.user);
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     console.log(email, password);
-    const data = {
+    try {
+      const data = {
       "email":email,
       "password": password
     }
-    dispatch(login(data));
+    const result = await dispatch(login(data)); // wait for result
+    console.log('helll',result.type);
+    
+    if (result?.type?.includes("fulfilled")) {
+      toast.success("Login successful!");
+      navigate('/')
+    } else {
+      toast.error(result.payload || "Login failed");
+    }
     console.log('executed')
+    } catch (error) {
+      toast.error(error.message);
+    }
+    
   };
 
+
   return (
+    
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <ToastContainer position="top-right" autoClose={3000} />
+
       <motion.div
         className="sm:mx-auto sm:w-full sm:max-w-md"
         initial={{ opacity: 0, y: -20 }}

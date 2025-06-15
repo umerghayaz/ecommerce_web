@@ -13,6 +13,9 @@ const productSlice = createSlice({
 
   },
   reducers: {
+      clearCart: (state) => {
+      state.cart = [];
+    },
     // Define your reducers here if needed
   },
   extraReducers: (builder) => {
@@ -161,5 +164,6 @@ const productSlice = createSlice({
       })
   },
 });
+export const { clearCart } = productSlice.actions;
 
 export default productSlice.reducer;

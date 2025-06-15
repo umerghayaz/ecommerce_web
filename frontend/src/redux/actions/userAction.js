@@ -3,11 +3,8 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Alert } from 'antd';
 // create User
-export const signUp = createAsyncThunk("signUp", async (data) => {
-    if (data.password !== data.confirmPassword) {
-        toast.error("Passwords do not match");
-        return 
-      } 
+export const signUp = createAsyncThunk("signUp", async (data, { rejectWithValue }) => {
+   
     try {
      const response = await axios.post("http://localhost:5000/api/auth/signup", {
        name:data.name, email: data.email, password: data.password, confirmPassword: data.confirmPassword 
@@ -15,25 +12,30 @@ export const signUp = createAsyncThunk("signUp", async (data) => {
     console.log(response.data,'data');
     return response.data;
   } catch (error) {
-    return isRejectedWithValue(error.response);
+   const errorMessage =
+    error.response?.data?.message || "Signup failed. Please try again.";
+    return rejectWithValue({ message: errorMessage });
   }
 });
 
 // read User
-export const login = createAsyncThunk("login", async (data) => {
-  try {
-    console.log('login11111111111',data)
-
-    const res = await axios.post("http://localhost:5000/api/auth/login", {
-       email: data.email, password: data.password,
+export const login = createAsyncThunk(
+  "login",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email: data.email,
+        password: data.password,
       });
+
       localStorage.setItem("token", res.data.token);
-    console.log(res.data);
-    return res.data;
-  } catch (error) {
-    return isRejectedWithValue(error.response);
+      return res.data;
+    } catch (error) {
+      // Use rejectWithValue to pass a custom error payload
+      return rejectWithValue(error.response?.data?.message || "Login failed");
+    }
   }
-});
+);
 export const logout = createAsyncThunk("logout", async () => {
   try {
     await axios.post("http://localhost:5000/api/auth/logout");

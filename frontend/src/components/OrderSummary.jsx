@@ -3,20 +3,25 @@ import { useCartStore } from "../stores/useCartStore";
 import { Link, useNavigate } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
+import { useDispatch } from "react-redux";
 
 // import axios from "../lib/axios";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { clearCart } from "../redux/reducers/productReducer";
  
 // const stripePromise = loadStripe("");
 
 const OrderSummary = () => {
   const navigate =useNavigate()
   const [items, setItems] = useState()
-  const {coupon,isCouponApplied} = useSelector((state) => state.cart);
+  let {coupon,isCouponApplied} = useSelector((state) => state.cart);
   // const { coupon, isCouponApplied } = useCartStore();
-  const { cart} = useSelector((state) => state.product);
+  let { cart} = useSelector((state) => state.product);
+    const { user} = useSelector((state) => state.user);
+    const dispatch = useDispatch()
+
   const [total, setTotal] = useState(0);
   const [subtotal, setsubTotal] = useState(0);
 
@@ -24,8 +29,10 @@ const OrderSummary = () => {
   const calculateTotal = (cart,coupon) => {
     let totalValue = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     let subtotal = totalValue
-    if (coupon) {
-      const discount = totalValue * (coupon.discountPercentage / 100);
+        console.log('hell total',coupon?.length)
+
+    if (coupon?.length !==0) {
+      const discount = totalValue * (coupon?.discountPercentage / 100);
       totalValue = totalValue - discount;
     }
     setTotal(totalValue);
@@ -33,7 +40,7 @@ const OrderSummary = () => {
   };
   useEffect(() => {
     calculateTotal(cart,coupon)
-    console.log('coupon',coupon)
+    console.log('user',user._id)
   }, [cart,isCouponApplied]);
 console.log('total',total);
 console.log('coupon',coupon)
@@ -50,14 +57,16 @@ console.log('coupon',coupon)
       headers: { Authorization: `Bearer ${token}` },
     };
     const res = await axios.post(
-      "http://localhost:5000/api/payments/create-checkout-session",
+      "http://localhost:5000/api/payments/checkout-success",
       {
         products: cart,
         couponCode: coupon ? coupon.code : null,
+        userId:user._id,
+        totalAmount:total
       },
       config
     );
-
+     dispatch(clearCart())
     const session = res.data;
     navigate('/purchase-success')
     // const result = await stripe.redirectToCheckout({
@@ -69,6 +78,7 @@ console.log('coupon',coupon)
     // }
   };
 
+    
   return (
     <motion.div
       className="space-y-4 rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm sm:p-6"

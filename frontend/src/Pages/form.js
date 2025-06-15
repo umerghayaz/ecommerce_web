@@ -35,7 +35,7 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      //   toast.error("Password and Confirm Password do not match!");
+        toast.error("Password and Confirm Password do not match!");
       return;
     }
     try {
@@ -48,13 +48,13 @@ const SignupPage = () => {
           },
         }
       );
-      console.log(response.data);
-      //   toast.success("SignupPage successful!");
-      setTimeout(() => {
-        navigate("/login");
-      }, 3000);
+      toast.success("SignupPage successful!");
+      navigate("/login");
+      // setTimeout(() => {
+        
+      // }, 3000);
     } catch (error) {
-      //   toast.error("Password not matching requirements!");
+        toast.error(error.message);
     }
   };
 
