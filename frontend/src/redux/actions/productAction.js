@@ -1,18 +1,16 @@
 import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API } from "../../services/api";
+
 import { toast } from "react-hot-toast";
-import { Alert } from 'antd';
 // create User
-export const createProduct = createAsyncThunk("createProduct", async (data) => {
+export const createProduct = createAsyncThunk("/createProduct", async (data) => {
     
   try {
-    const token = localStorage.getItem("token");
-    let config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    const response = await axios.post("http://localhost:5000/api/products",
+   
+    const response = await API.post("/products",
       data,
-      config
+     { withCredentials: true}
     );
   console.log(response.data,'data');
   return response.data;
@@ -20,14 +18,11 @@ export const createProduct = createAsyncThunk("createProduct", async (data) => {
   return isRejectedWithValue(error.response);
 }
 });
-export const deleteProduct = createAsyncThunk("deleteProduct", async (data) => {
+export const deleteProduct = createAsyncThunk("/deleteProduct", async (data) => {
     
   try {
-    const token = localStorage.getItem("token");
-    let config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    await axios.delete(`http://localhost:5000/api/products/${data}`,config);
+   
+    await API.delete(`/products/${data}`,{ withCredentials: true});
     return data;
 
 } catch (error) {
@@ -35,11 +30,10 @@ export const deleteProduct = createAsyncThunk("deleteProduct", async (data) => {
 }
 });
 // read User
-export const fetchAllProducts = createAsyncThunk("fetchAllProducts", async (data) => {
+export const fetchAllProducts = createAsyncThunk("/fetchAllProducts", async (data) => {
   try {
-    const token = localStorage.getItem("token");
-    let config = {headers: { Authorization: `Bearer ${token}` },};
-    const res = await axios.get("http://localhost:5000/api/products",config);
+    
+    const res = await API.get("/products",{ withCredentials: true});
 
     console.log(res.data);
     return res.data;
@@ -47,15 +41,12 @@ export const fetchAllProducts = createAsyncThunk("fetchAllProducts", async (data
     return isRejectedWithValue(error.response);
   }
 });
-export const toggleFeaturedProduct = createAsyncThunk("toggleFeaturedProduct", async (data) => {
+export const toggleFeaturedProduct = createAsyncThunk("/toggleFeaturedProduct", async (data) => {
   try {
-    const token = localStorage.getItem("token");
-    let config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
+   
     console.log('data',data)
       
-    const res = await axios.get(`http://localhost:5000/api/products/${data}`,config);
+    const res = await API.get(`/products/${data}`,{ withCredentials: true});
 
     console.log(res.data);
     return res.data; 
@@ -63,14 +54,10 @@ export const toggleFeaturedProduct = createAsyncThunk("toggleFeaturedProduct", a
     return isRejectedWithValue(error.response);
   }
 });
-export const fetchFeaturedProducts = createAsyncThunk("fetchFeaturedProducts", async (data) => {
+export const fetchFeaturedProducts = createAsyncThunk("/fetchFeaturedProducts", async (data) => {
   try {
-    const token = localStorage.getItem("token");
-    let config = 
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    const res = await axios.get("http://localhost:5000/api/products/featured",config);
+    
+    const res = await API.get("/products/featured",{ withCredentials: true});
     return res.data;
   } catch (error) {
     return isRejectedWithValue(error.response);
@@ -80,13 +67,11 @@ export const fetchProductsByCategory = createAsyncThunk(
   "products/fetchByCategory",
   async (category, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-      const response = await axios.get(
-        `http://localhost:5000/api/products/category/${category}`,
-        config
+   
+      const response = await API.get(
+        `/products/category/${category}`,
+         { withCredentials: true}
+
       );
       console.log('productsssssssss',response.data);
       

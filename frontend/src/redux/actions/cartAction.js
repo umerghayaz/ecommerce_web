@@ -31,7 +31,7 @@ export const removeFromCart = createAsyncThunk("removeFromCart", async (data) =>
     await axios.delete(
       `http://localhost:5000/api/cart/${data}`,
       
-      config
+     { withCredentials: true}
     );
     return data;
 
@@ -51,7 +51,7 @@ export const updateQuantity = createAsyncThunk("updateQuantity", async (data) =>
       {
         quantity,
       },
-      config
+      { withCredentials: true}
     );
     console.log('hellllllll', id,quantity)
     return {id,quantity}
@@ -68,7 +68,7 @@ export const applyCoupon  = createAsyncThunk("applyCoupon ", async (data) => {
     const response = await axios.post(
       "http://localhost:5000/api/coupons/validate",
       { code },
-      config
+     { withCredentials: true}
     );
     return response.data
   } catch (error) {
@@ -83,7 +83,7 @@ export const getCartItems = createAsyncThunk("getCartItems", async (data) => {
       headers: { Authorization: `Bearer ${token}` },
     };
     const response = await axios.get("http://localhost:5000/api/cart",
-      config
+      { withCredentials: true}
     );
   console.log(response.data,'data');
   return response.data;
@@ -106,7 +106,7 @@ export const addToCart = createAsyncThunk("addToCart", async (data) => {
       {
         productId: data._id,
       },
-      config
+     { withCredentials: true}
     );
 
     // Find the specific product

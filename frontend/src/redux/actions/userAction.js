@@ -1,12 +1,12 @@
 import { createAsyncThunk, isRejectedWithValue } from "@reduxjs/toolkit";
 import axios from "axios";
-import { toast } from "react-hot-toast";
-import { Alert } from 'antd';
+import { API } from "../../services/api";
+
 // create User
 export const signUp = createAsyncThunk("signUp", async (data, { rejectWithValue }) => {
    
     try {
-     const response = await axios.post("http://localhost:5000/api/auth/signup", {
+     const response = await API.post("/auth/signup", {
        name:data.name, email: data.email, password: data.password, confirmPassword: data.confirmPassword 
       })
     console.log(response.data,'data');
@@ -23,12 +23,13 @@ export const login = createAsyncThunk(
   "login",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await API.post("/auth/login", {
         email: data.email,
         password: data.password,
-      });
+      },{
+  withCredentials: true,
+});
 
-      localStorage.setItem("token", res.data.token);
       return res.data;
     } catch (error) {
       // Use rejectWithValue to pass a custom error payload
@@ -38,7 +39,7 @@ export const login = createAsyncThunk(
 );
 export const logout = createAsyncThunk("logout", async () => {
   try {
-    await axios.post("http://localhost:5000/api/auth/logout");
+    await API.post("/auth/logout");
     return 
   } catch (error) {
     return isRejectedWithValue(error.response);
@@ -46,10 +47,8 @@ export const logout = createAsyncThunk("logout", async () => {
 });
 export const checkAuth = createAsyncThunk("checkAuth", async (data) => {
   try {
-    const token = localStorage.getItem("token");
-    let config = { headers: { Authorization: `Bearer ${token}` },};
-    const res = await axios.get( "http://localhost:5000/api/auth/profile",
-        config
+   
+    const res = await API.get("/auth/profile",
       );
     console.log(res.data);
     return res.data;
